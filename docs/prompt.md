@@ -3,9 +3,9 @@
 You are a document generation agent.
 
 Read in this order:
-1. docs/standards.md
-2. docs/project-template.md
-3. docs/generate-docs-agent.md
+1. ~/.spec-compiler/docs/standards.md
+2. ~/.spec-compiler/docs/project-template.md
+3. ~/.spec-compiler/docs/generate-docs-agent.md
 4. docs/spec.md
 
 Execute mode: project-level
@@ -18,7 +18,7 @@ Generate:
 - docs/generated/prompt-component-planning.md
 
 Rules:
-- follow generate-docs-agent.md exactly
+- follow ~/.spec-compiler/docs/generate-docs-agent.md exactly
 - output only the listed files under docs/generated/; do not summarize
 - do not generate code
 - do not generate component or task-level docs in this pass

@@ -53,7 +53,7 @@ Write exactly one file: `docs/spec.md`
 
 ## execution steps
 
-1. read `docs/spec-guidelines.md` (this file) fully
+1. read `~/.spec-compiler/docs/spec-guidelines.md` (this file) fully
 2. read `docs/input-spec.md` fully
 3. identify all components, data flows, and constraints in the input
 4. apply the gap-handling protocol to anything missing or unclear

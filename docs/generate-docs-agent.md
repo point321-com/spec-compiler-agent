@@ -11,8 +11,8 @@ it must follow standards.md and project-template.md exactly.
 ## inputs
 
 - docs/spec.md
-- docs/standards.md
-- docs/project-template.md
+- ~/.spec-compiler/docs/standards.md
+- ~/.spec-compiler/docs/project-template.md
 
 ---
 
@@ -135,11 +135,11 @@ this agent supports multiple modes based on prompt:
 
 generate:
 
-- build-order.md
-- agent.md
-- task.md
-- common.md
-- prompt-component-planning.md (populated with actual component list from spec)
+- docs/generated/build-order.md
+- docs/generated/agent.md
+- docs/generated/task.md
+- docs/generated/common.md
+- docs/generated/prompt-component-planning.md (populated with actual component list from spec)
 
 content format for each document is defined in `project-template.md`. follow those definitions exactly.
 
@@ -147,7 +147,14 @@ content format for each document is defined in `project-template.md`. follow tho
 
 ### mode: component-planning
 
-generate per component:
+before writing any files for a component:
+
+1. create the component directory (`libs/<name>/` or `services/<name>/`)
+2. create symlinks to shared project docs:
+   - `ln -s ../../docs/generated/common.md     <component>/common.md`
+   - `ln -s ../../docs/generated/build-order.md <component>/build-order.md`
+
+then generate per component:
 
 - libs/*/agent.md
 - libs/*/tasks.md
@@ -162,7 +169,9 @@ generate per component:
 
 generate for a single component:
 
-- 00-*.md task files
+- <component>/00-*.md
+- <component>/01-*.md
+- ...
 
 ---
 
@@ -171,4 +180,4 @@ generate for a single component:
 1. spec.md — defines what to build (source of truth)
 2. standards.md — defines non-negotiable engineering rules
 3. project-template.md — defines document structure and format
-4. build-order.md — defines implementation sequence; `next task` fields in task files must match it exactly. build-order.md is authoritative. if a conflict exists, fix the task file.
+4. docs/generated/build-order.md — defines implementation sequence; `next task` fields in task files must match it exactly. build-order.md is authoritative. if a conflict exists, fix the task file. within a component directory, this is accessible as `build-order.md` via symlink.

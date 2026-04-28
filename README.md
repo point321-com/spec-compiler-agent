@@ -99,7 +99,7 @@ Entry point for agents.
 The only valid invocation pattern is:
 
 ```
-Implement prompt.md
+Implement ~/.spec-compiler/docs/prompt.md
 ```
 
 This ensures:
@@ -166,15 +166,16 @@ This system fixes that by:
 
 ## intended usage
 
-1. write `spec.md`
-2. run:
+1. symlink this repo: `ln -s /path/to/spec-compiler-agent ~/.spec-compiler`
+2. in your project, write `docs/spec.md` (or run `Implement ~/.spec-compiler/docs/prompt-spec.md` to generate it from `docs/input-spec.md`)
+3. from your project root, run:
 
 ```
-Implement docs/prompt.md
+Implement ~/.spec-compiler/docs/prompt.md
 ```
 
-3. follow generated prompts step-by-step
-4. execute tasks one at a time
+4. follow generated prompts step-by-step
+5. execute tasks one at a time
 
 ---
 

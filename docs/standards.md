@@ -29,7 +29,7 @@ ROOT/services/<service-name>/
 documentation is always written to:
 
 ```
-ROOT/docs/generated/...
+docs/generated/...
 ```
 
 
@@ -199,7 +199,7 @@ on completion, the agent appends a `## changelog` section to the existing `<task
 the only valid way to run an agent is:
 
 ```
-Implement <path>/prompt.md
+Implement ~/.spec-compiler/docs/prompt.md
 ```
 
 

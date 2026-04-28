@@ -10,28 +10,62 @@ it is reusable across all projects.
 
 ## generated structure
 
+project-level docs (shared, read-only by components):
+
 ```
 docs/generated/
 ├── build-order.md
 ├── agent.md
 ├── task.md
 ├── common.md
-├── prompt-component-planning.md
-├── libs/
-│   └── <lib-name>/
-│       ├── agent.md
-│       ├── tasks.md
-│       ├── prompt-tasks.md
-│       ├── 00-<task-name>.md
-│       └── <task-name>-done.md
-└── services/
-    └── <service-name>/
-        ├── agent.md
-        ├── tasks.md
-        ├── prompt-tasks.md
-        ├── 00-<task-name>.md
-        └── <task-name>-done.md
+└── prompt-component-planning.md
 ```
+
+component docs and source live together:
+
+```
+libs/
+└── <lib-name>/
+    ├── agent.md
+    ├── tasks.md
+    ├── prompt-tasks.md
+    ├── 00-<task-name>.md
+    ├── <task-name>-done.md
+    ├── common.md          → symlink: ../../docs/generated/common.md
+    └── build-order.md     → symlink: ../../docs/generated/build-order.md
+services/
+└── <service-name>/
+    ├── agent.md
+    ├── tasks.md
+    ├── prompt-tasks.md
+    ├── 00-<task-name>.md
+    ├── <task-name>-done.md
+    ├── common.md          → symlink: ../../docs/generated/common.md
+    └── build-order.md     → symlink: ../../docs/generated/build-order.md
+```
+
+---
+
+## component directory setup
+
+when creating a new component directory (`libs/<name>/` or `services/<name>/`), the agent must:
+
+1. create the directory
+2. create the following symlinks before writing any component files:
+
+```
+ln -s ../../docs/generated/common.md     libs/<name>/common.md
+ln -s ../../docs/generated/build-order.md libs/<name>/build-order.md
+```
+
+for services:
+
+```
+ln -s ../../docs/generated/common.md     services/<name>/common.md
+ln -s ../../docs/generated/build-order.md services/<name>/build-order.md
+```
+
+this ensures the agent operating inside the component directory can read shared contracts without leaving its working scope.
 
 ---
 
@@ -129,9 +163,9 @@ the project-level agent must generate `docs/generated/prompt-component-planning.
 You are a document generation agent.
 
 Read in this order:
-1. docs/standards.md
-2. docs/project-template.md
-3. docs/generate-docs-agent.md
+1. ~/.spec-compiler/docs/standards.md
+2. ~/.spec-compiler/docs/project-template.md
+3. ~/.spec-compiler/docs/generate-docs-agent.md
 4. docs/generated/build-order.md
 5. docs/generated/common.md
 6. docs/generated/agent.md
@@ -139,16 +173,17 @@ Read in this order:
 Execute mode: component-planning
 
 Generate:
-- docs/generated/libs/<lib-name>/agent.md
-- docs/generated/libs/<lib-name>/tasks.md
-- docs/generated/libs/<lib-name>/prompt-tasks.md
-- docs/generated/services/<service-name>/agent.md
-- docs/generated/services/<service-name>/tasks.md
-- docs/generated/services/<service-name>/prompt-tasks.md
+- libs/<lib-name>/agent.md
+- libs/<lib-name>/tasks.md
+- libs/<lib-name>/prompt-tasks.md
+- services/<service-name>/agent.md
+- services/<service-name>/tasks.md
+- services/<service-name>/prompt-tasks.md
 
 Rules:
-- follow generate-docs-agent.md exactly
-- output only the listed files under docs/generated/; do not summarize
+- follow ~/.spec-compiler/docs/generate-docs-agent.md exactly
+- before writing any component files, create the component directory and symlink shared docs (see project-template.md: component directory setup)
+- output only the listed files under libs/ or services/; do not summarize
 - do not generate code
 - do not generate task-level docs in this pass
 - one component per pass if context is constrained
@@ -166,24 +201,24 @@ the component-planning agent must generate one `docs/generated/<component>/promp
 You are a document generation agent.
 
 Read in this order:
-1. docs/standards.md
-2. docs/project-template.md
-3. docs/generate-docs-agent.md
-4. docs/generated/common.md
-5. docs/generated/<component>/agent.md
-6. docs/generated/<component>/tasks.md
+1. ~/.spec-compiler/docs/standards.md
+2. ~/.spec-compiler/docs/project-template.md
+3. ~/.spec-compiler/docs/generate-docs-agent.md
+4. <component>/common.md
+5. <component>/agent.md
+6. <component>/tasks.md
 
 Execute mode: component-tasks
 Component: <component>
 
 Generate:
-- docs/generated/<component>/00-<task-name>.md
-- docs/generated/<component>/01-<task-name>.md
+- <component>/00-<task-name>.md
+- <component>/01-<task-name>.md
 - ...
 
 Rules:
-- follow generate-docs-agent.md exactly
-- output only the listed files under docs/generated/; do not summarize
+- follow ~/.spec-compiler/docs/generate-docs-agent.md exactly
+- output only the listed files under <component>/; do not summarize
 - do not generate code
 - one component only
 - follow tasks.md order exactly
@@ -204,9 +239,9 @@ every task file must follow this exact structure. no sections may be omitted.
 
 ## reads
 
-- docs/generated/common.md
-- docs/generated/build-order.md
-- docs/generated/<component>/agent.md
+- common.md
+- build-order.md
+- agent.md
 - <prior-task>-done.md
 
 ## writes
