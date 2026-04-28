@@ -1,0 +1,326 @@
+# project template
+
+## purpose
+
+This document defines how to transform a spec into structured implementation documents.
+
+it is reusable across all projects.
+
+---
+
+## generated structure
+
+```
+docs/generated/
+├── build-order.md
+├── agent.md
+├── task.md
+├── common.md
+├── prompt-component-planning.md
+├── libs/
+│   └── <lib-name>/
+│       ├── agent.md
+│       ├── tasks.md
+│       ├── prompt-tasks.md
+│       ├── 00-<task-name>.md
+│       └── <task-name>-done.md
+└── services/
+    └── <service-name>/
+        ├── agent.md
+        ├── tasks.md
+        ├── prompt-tasks.md
+        ├── 00-<task-name>.md
+        └── <task-name>-done.md
+```
+
+---
+
+## build-order.md
+
+defines global implementation order.
+
+### requirements
+
+- libraries before services
+- dependency-driven ordering only
+- no parallel ambiguity
+- explicit sequence
+
+---
+
+## common.md
+
+defines shared contracts across the system.
+
+### includes
+
+- shared models
+- interfaces
+- protocols
+- cross-component rules
+
+### rules
+
+- must be minimal and precise
+- do not copy spec requirements prose; extract only implementation-relevant contracts
+- only implementation-relevant contracts
+
+---
+
+## agent.md (project-level)
+
+a project-specific distillation generated from the spec. tells subsequent agents how to operate in the context of this specific project.
+
+### includes
+
+- identified libraries and services with their roles
+- dependency ordering rationale
+- project-specific constraints or deviations from general standards
+- component breakdown and boundaries
+
+---
+
+## task.md (project-level)
+
+a project-specific execution guide for coding agents generated from the spec.
+
+### includes
+
+- sequencing rules specific to this project
+- dependency handling notes
+- validation expectations for this project's stack
+- how to transition between tasks
+
+---
+
+## component agent.md
+
+defines responsibilities for a specific lib or service.
+
+### includes
+
+- scope boundaries
+- inputs and outputs
+- dependencies
+- what the component must not do
+
+---
+
+## component tasks.md
+
+defines ordered tasks for the component.
+
+### rules
+
+- strictly sequential
+- each task must produce an artifact
+- each task must be independently testable
+- no cross-component work
+
+---
+
+## generated prompt format: component-planning
+
+the project-level agent must generate `docs/generated/prompt-component-planning.md` using this template, with the actual component list populated from the spec.
+
+~~~markdown
+# prompt
+
+You are a document generation agent.
+
+Read in this order:
+1. docs/standards.md
+2. docs/project-template.md
+3. docs/generate-docs-agent.md
+4. docs/generated/build-order.md
+5. docs/generated/common.md
+6. docs/generated/agent.md
+
+Execute mode: component-planning
+
+Generate:
+- docs/generated/libs/<lib-name>/agent.md
+- docs/generated/libs/<lib-name>/tasks.md
+- docs/generated/libs/<lib-name>/prompt-tasks.md
+- docs/generated/services/<service-name>/agent.md
+- docs/generated/services/<service-name>/tasks.md
+- docs/generated/services/<service-name>/prompt-tasks.md
+
+Rules:
+- follow generate-docs-agent.md exactly
+- output only the listed files under docs/generated/; do not summarize
+- do not generate code
+- do not generate task-level docs in this pass
+- one component per pass if context is constrained
+~~~
+
+---
+
+## generated prompt format: component-tasks
+
+the component-planning agent must generate one `docs/generated/<component>/prompt-tasks.md` per component using this template, with the component path and task list populated from that component's tasks.md.
+
+~~~markdown
+# prompt
+
+You are a document generation agent.
+
+Read in this order:
+1. docs/standards.md
+2. docs/project-template.md
+3. docs/generate-docs-agent.md
+4. docs/generated/common.md
+5. docs/generated/<component>/agent.md
+6. docs/generated/<component>/tasks.md
+
+Execute mode: component-tasks
+Component: <component>
+
+Generate:
+- docs/generated/<component>/00-<task-name>.md
+- docs/generated/<component>/01-<task-name>.md
+- ...
+
+Rules:
+- follow generate-docs-agent.md exactly
+- output only the listed files under docs/generated/; do not summarize
+- do not generate code
+- one component only
+- follow tasks.md order exactly
+~~~
+
+---
+
+## task file format
+
+every task file must follow this exact structure. no sections may be omitted.
+
+~~~markdown
+# <task-name>
+
+## purpose
+
+<one paragraph: what is being built and why>
+
+## reads
+
+- docs/generated/common.md
+- docs/generated/build-order.md
+- docs/generated/<component>/agent.md
+- <prior-task>-done.md
+
+## writes
+
+- ROOT/libs/<lib-name>/src/<module>.py
+- ROOT/libs/<lib-name>/tests/unit/test_<module>.py
+
+## artifact
+
+### <ArtifactName>
+
+**interface:**
+<public interface, types, signatures>
+
+**behavior:**
+<what it does>
+
+**boundaries:**
+<what it must not do>
+
+## implementation notes
+
+<specific implementation guidance, patterns, constraints>
+
+## tests
+
+### unit tests
+
+- <test case 1>
+- <test case 2>
+
+### functional tests
+
+- <test case>
+
+## definition of done
+
+- [ ] artifact implemented and directly importable or callable
+- [ ] all unit tests pass with no external dependencies
+- [ ] no TODOs, placeholders, or deferred logic
+- [ ] writes section matches actual files created
+- [ ] <task-name>-done.md produced
+
+## next task
+
+`docs/generated/<component>/<next-task>.md`
+~~~
+
+### rules
+
+- every section is mandatory
+- `reads` must list every doc and prior task the agent needs — no implicit context
+- `writes` must list exact file paths under `ROOT/libs/` or `ROOT/services/` only
+- `artifact` must define a concrete, testable unit — not a folder, stub, or TODO
+- `functional tests` section is required unless no runnable boundary exists; state the reason if omitted
+- `definition of done` checkboxes must all be satisfiable before the task is considered complete
+
+---
+
+## done file format
+
+every completed task must produce a done file matching this exact structure.
+
+~~~markdown
+# <task-name> done
+
+## summary
+
+<what was implemented>
+
+## files
+
+- <created or modified file path>
+
+## tests
+
+<what was tested>
+
+## notes
+
+<assumptions or deviations from the task spec>
+
+## next steps
+
+<instructions for the next task>
+~~~
+
+---
+
+## naming conventions
+
+- all files lowercase hyphenated except numbered tasks
+- tasks use numeric prefixes:
+  - 00-bootstrap.md
+  - 01-<name>.md
+- done files:
+  - 00-bootstrap-done.md
+
+---
+
+## constraints
+
+- no code generation during planning phases
+- no skipping of task levels
+- no merging of tasks
+- no large tasks
+
+---
+
+## output expectations
+
+the system must produce:
+
+- deterministic structure
+- minimal ambiguity
+- strict contracts
+- execution-ready tasks
