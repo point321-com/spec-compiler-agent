@@ -79,6 +79,7 @@ defines global implementation order.
 - dependency-driven ordering only
 - no parallel ambiguity
 - explicit sequence
+- every row must carry an explicit dependency declaration; "no lib dependencies" is a valid and required declaration when true
 
 ---
 
@@ -88,7 +89,7 @@ defines shared contracts across the system.
 
 ### includes
 
-- shared models
+- shared models: full typed field listings (Pydantic v2 annotations); not names-only references to the spec
 - interfaces
 - protocols
 - cross-component rules
@@ -98,6 +99,8 @@ defines shared contracts across the system.
 - must be minimal and precise
 - do not copy spec requirements prose; extract only implementation-relevant contracts
 - only implementation-relevant contracts
+- must not contain authoring instructions, agent directives, or meta-commentary; those belong in `agent.md` or `task.md`
+- must not restate repository structure, naming conventions, or engineering rules already defined in `standards.md`; reference `standards.md` by name if needed, do not copy its content
 
 ---
 
@@ -108,7 +111,7 @@ a project-specific distillation generated from the spec. tells subsequent agents
 ### includes
 
 - identified libraries and services with their roles
-- dependency ordering rationale
+- dependency ordering rationale: **every library and service in the build order must have an explicit rationale entry** — not just the primary chains; explain why each component is positioned where it is relative to its neighbors
 - project-specific constraints or deviations from general standards
 - component breakdown and boundaries
 

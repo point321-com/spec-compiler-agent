@@ -195,6 +195,74 @@ additionally documented the spec structure limitation (no minimum spec structure
 
 ---
 
+---
+
+## generated output review — 2026-04-28
+
+applied fixes from `REFACTOR.md` (principal AI/ML engineer review pass) to source templates. scope: issues identified in `docs/generated/build-order.md`, `common.md`, and `agent.md`. no changes to `task.md` or `prompt-component-planning.md` (passed review).
+
+---
+
+### changes
+
+---
+
+#### fix 1 — `build-order.md` silent dependency rows
+
+**problem:** rows in `build-order.md` with no upstream dependencies carried no notes entry. silence was ambiguous — it did not confirm "no dependencies," it simply omitted the information.
+
+**resolution:**
+- `project-template.md` (`## build-order.md` → `### requirements`): added rule requiring every row to carry an explicit dependency declaration; "no lib dependencies" is a valid and required declaration when true.
+- `generate-docs-agent.md` (`## responsibilities`): expanded the `generate build order` bullet to state that every row must have an explicit notes entry; silence is not valid; the agent must inspect the spec and make a deliberate, stated determination.
+
+**files:** `project-template.md`, `generate-docs-agent.md`
+
+---
+
+#### fix 2a — `common.md` authoring instruction prose leaked into contract file
+
+**problem:** `common.md` contained a line that was an authoring instruction ("Component-specific task docs must not restate full spec prose…"), not an implementation contract.
+
+**resolution:** `project-template.md` (`## common.md` → `### rules`): added rule prohibiting authoring instructions, agent directives, and meta-commentary from `common.md`.
+
+**file:** `project-template.md`
+
+---
+
+#### fix 2b — `common.md` restated `standards.md` structure rules
+
+**problem:** `common.md` contained a `## repository layout` section duplicating path rules already defined in `standards.md`. governance prose is not an implementation contract.
+
+**resolution:** `project-template.md` (`## common.md` → `### rules`): added rule prohibiting restatement of repository structure, naming conventions, or engineering rules from `standards.md`; reference by name instead.
+
+**file:** `project-template.md`
+
+---
+
+#### fix 2c — `common.md` model contracts deferred types to spec
+
+**problem:** the `## core models` section carried "(names only; shapes in spec)" and listed field names without Python type annotations. `standards.md` requires all interfaces to be explicit and typed. a contract that defers to the spec is not a contract.
+
+**resolution:**
+- `project-template.md` (`## common.md` → `### includes`): replaced `- shared models` with `- shared models: full typed field listings (Pydantic v2 annotations); not names-only references to the spec`.
+- `generate-docs-agent.md` (`### 5. contract centralization`): added two bullets: typed fields required when extracting models; "(names only; shapes in spec)" and equivalent deferrals are forbidden.
+
+**files:** `project-template.md`, `generate-docs-agent.md`
+
+---
+
+#### fix 3 — `agent.md` dependency rationale incomplete
+
+**problem:** the `## dependency rationale` section in `agent.md` covered only the main service-to-lib chains. several libs (`libs/auth`, `libs/observability`, `libs/pii`, `libs/reranker`) had no rationale entry.
+
+**resolution:**
+- `project-template.md` (`## agent.md (project-level)` → `### includes`): replaced the `dependency ordering rationale` bullet to require an explicit rationale entry for every library and service in the build order, not just primary chains.
+- `generate-docs-agent.md` (`### 3. dependency-first design`): added bullet requiring a rationale entry for every component; components with no obvious upstream dependencies must still state why they are positioned where they are.
+
+**files:** `project-template.md`, `generate-docs-agent.md`
+
+---
+
 ### issues reviewed and accepted as-is
 
 | # | reason |
