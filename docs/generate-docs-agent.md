@@ -31,7 +31,7 @@ docs/generated/
 - analyze spec
 - identify libraries and services
 - determine dependencies
-- generate build order: every row in `build-order.md` must include an explicit dependency declaration in its notes column; if a component has no dependencies on other libs or services, the notes must say so explicitly (e.g., "No lib dependencies."); silence is not valid; the agent must inspect the spec for each component and make a deliberate, stated determination
+- generate build order: every row in `build-order.md` must include an explicit dependency declaration in its notes column; if a component has no dependencies on other libs or services, the notes must say so explicitly (e.g., "No lib dependencies."); silence is not valid; the agent must inspect the spec for each component and make a deliberate, stated determination; dependency declarations must reflect current definitive state only — speculative or conditional future dependency clauses (e.g., "if a later task aligns X with Y, add Z as a dependency") are forbidden
 - extract shared contracts
 - generate project-level docs
 - generate component planning docs
@@ -82,6 +82,8 @@ all task content must satisfy the artifact and dependency rules defined in `stan
 - all components must reference common.md
 - when extracting models to `common.md`, all fields must be listed with Python type annotations (Pydantic v2 style); field names without types are not sufficient
 - the annotation "(names only; shapes in spec)" or any equivalent deferral is forbidden; if the spec defines a model, its typed fields belong in `common.md`
+- each `Literal` type must appear exactly once in `common.md`'s `## literals` block; subsequent code blocks must reference it via inline comment and must not re-declare the type
+- behavioral enforcement rules (runtime ACL filters, query-time access control, etc.) are not typed contracts; do not place them in `common.md` — they belong in `agent.md` or `task.md`
 
 ---
 

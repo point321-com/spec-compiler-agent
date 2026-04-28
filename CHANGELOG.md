@@ -274,3 +274,47 @@ applied fixes from `REFACTOR.md` (principal AI/ML engineer review pass) to sourc
 | 11 | `generate-docs-agent.md` input paths — same `docs/` prefix assumption as #2; consistent by design, not an issue |
 
 ---
+
+## REFACTOR.md implementation — 2026-04-28
+
+Applied all four fixes from `REFACTOR.md` (principal AI/ML engineer review of `docs/generated/` output). Fixes applied to source template files only. No files under `docs/generated/` were modified; regeneration is a separate pass.
+
+---
+
+### REFACTOR-01 — build-order.md preamble: no spec prose
+
+**File:** `~/.spec-compiler/docs/project-template.md`
+**Section:** `## build-order.md` → `### requirements`
+**Change:** Added rule — preamble must contain only the global sequence ordering statement; scope constraints, phase validation notes, and other spec prose are forbidden.
+
+---
+
+### REFACTOR-02 — build-order.md dependency notes: no speculative clauses
+
+**Files:**
+- `~/.spec-compiler/docs/project-template.md` — `## build-order.md` → `### requirements` (+1 rule)
+- `~/.spec-compiler/docs/generate-docs-agent.md` — `## responsibilities` build-order bullet (clause appended)
+
+**Change:** Dependency declarations must reflect current definitive state only; speculative or conditional future dependency clauses are forbidden.
+
+---
+
+### REFACTOR-03 — common.md: no duplicate Literal re-declarations
+
+**Files:**
+- `~/.spec-compiler/docs/project-template.md` — `## common.md` → `### rules` (+1 rule)
+- `~/.spec-compiler/docs/generate-docs-agent.md` — `### 5. contract centralization` (+1 bullet)
+
+**Change:** Each `Literal` type must be declared exactly once in the `## literals` block; subsequent code blocks must reference it via inline comment and must not re-declare the type.
+
+---
+
+### REFACTOR-04 — common.md: no behavioral enforcement prose
+
+**Files:**
+- `~/.spec-compiler/docs/project-template.md` — `## common.md` → `### rules` (+1 rule)
+- `~/.spec-compiler/docs/generate-docs-agent.md` — `### 5. contract centralization` (+1 bullet)
+
+**Change:** Behavioral enforcement rules (e.g., runtime ACL filters, query-time access control) are not typed contracts; they belong in `agent.md` or `task.md`, not `common.md`.
+
+---

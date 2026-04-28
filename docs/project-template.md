@@ -80,6 +80,8 @@ defines global implementation order.
 - no parallel ambiguity
 - explicit sequence
 - every row must carry an explicit dependency declaration; "no lib dependencies" is a valid and required declaration when true
+- preamble must contain only the global sequence ordering statement; do not include scope constraints, phase validation notes, or any spec prose beyond sequencing intent
+- dependency notes must declare current definitive state only; speculative or conditional future dependency clauses are forbidden
 
 ---
 
@@ -101,6 +103,8 @@ defines shared contracts across the system.
 - only implementation-relevant contracts
 - must not contain authoring instructions, agent directives, or meta-commentary; those belong in `agent.md` or `task.md`
 - must not restate repository structure, naming conventions, or engineering rules already defined in `standards.md`; reference `standards.md` by name if needed, do not copy its content
+- each `Literal` type must be declared exactly once, in the `## literals` block; all other code blocks must reference the canonical definition with an inline comment (e.g., `# ClassificationLiteral: see ## literals block above`) and must not re-declare the type
+- behavioral enforcement rules (e.g., runtime ACL filter requirements, query-time access control) are not typed contracts; they belong in `agent.md` or `task.md`; do not include them in `common.md`
 
 ---
 
