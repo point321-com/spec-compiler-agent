@@ -318,3 +318,59 @@ Applied all four fixes from `REFACTOR.md` (principal AI/ML engineer review of `d
 **Change:** Behavioral enforcement rules (e.g., runtime ACL filters, query-time access control) are not typed contracts; they belong in `agent.md` or `task.md`, not `common.md`.
 
 ---
+
+## REFACTOR.md generated-output review — 2026-04-28 (second pass)
+
+Applied fixes from `~/.spec-compiler/REFACTOR.md` (generated 2026-04-28, project: rag-platform, branch: phase00-documentation). The four violations were identified in `docs/generated/` output. The generated files were patched in the `restatucture` commit; this pass encodes corresponding rules in the source templates to prevent recurrence on regeneration.
+
+No files under `docs/generated/` were modified in this pass.
+
+---
+
+### Issue 1 — common.md: no `## cross-component references` section
+
+**Files:**
+- `~/.spec-compiler/docs/generate-docs-agent.md` — rule 5 (contract centralization), line 89
+- `~/.spec-compiler/docs/project-template.md` — `## common.md` → `### rules`, line 108
+
+**Rule violated:** Behavioral enforcement prose in `common.md` (`project-template.md` + `generate-docs-agent.md` rule 5).
+
+**Change:** Added explicit prohibition on creating a `## cross-component references` section in `common.md`. Runtime enforcement notes describing behavior at component boundaries (ACL filter application at query time, broker boundary message ID opacity) are behavioral rules, not typed contracts — they belong in `agent.md` or `task.md`.
+
+---
+
+### Issue 2 — common.md: no speculative / future-labeled models
+
+**Files:**
+- `~/.spec-compiler/docs/generate-docs-agent.md` — rule 5 (contract centralization), line 90
+- `~/.spec-compiler/docs/project-template.md` — `## common.md` → `### rules`, line 109
+
+**Rule violated:** No speculative or future-state content; `common.md` must be minimal and precise.
+
+**Change:** Added rule: models labeled "spec only", "future", or "implementation is future" must be excluded from `common.md` even when the spec provides their full shape. Only models required by current `build-order.md` components are permitted. Section headings must not imply speculative or future status (e.g., "future connector source configs (spec shapes)").
+
+**Spec note:** `SharepointSourceConfig` and `GDriveSourceConfig` are explicitly labeled "spec only — implementation is future" in `docs/spec.md`; they must not appear in `common.md`.
+
+---
+
+### Issue 3 — agent.md: no phase labels in dependency rationale
+
+**File:** `~/.spec-compiler/docs/generate-docs-agent.md` — rule 3 (dependency-first design), line 68
+
+**Rule violated:** Dependency declarations must reflect current definitive state only; no speculative or conditional future dependency clauses.
+
+**Change:** Added rule: dependency rationale entries in `agent.md` must not reference phase labels or implementation milestones (e.g., "Phase-1-style libs"). Use concrete, current dependency descriptions (e.g., "depends only on libs at compile time; no service-package imports").
+
+---
+
+### Issue 4 — task.md: build order vs. runtime validation flow
+
+**Files:**
+- `~/.spec-compiler/docs/generate-docs-agent.md` — responsibilities block, line 35
+- `~/.spec-compiler/docs/project-template.md` — `## task.md (project-level)` → new `### rules` subsection, line 139
+
+**Rule violated:** Task file must not contradict `build-order.md`; no ambiguous sequencing.
+
+**Change:** Added rule: `task.md` sequencing rules must clearly distinguish build order from runtime validation flow. Arrow notation (`→`) in sequencing rules implies build sequence — forbidden for describing runtime data-flow validation paths. Validation flows must be labeled explicitly (e.g., "run end-to-end ingestion validation once components X, Y, Z are built per `build-order.md`").
+
+---

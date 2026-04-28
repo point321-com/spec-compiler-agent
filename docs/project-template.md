@@ -105,6 +105,8 @@ defines shared contracts across the system.
 - must not restate repository structure, naming conventions, or engineering rules already defined in `standards.md`; reference `standards.md` by name if needed, do not copy its content
 - each `Literal` type must be declared exactly once, in the `## literals` block; all other code blocks must reference the canonical definition with an inline comment (e.g., `# ClassificationLiteral: see ## literals block above`) and must not re-declare the type
 - behavioral enforcement rules (e.g., runtime ACL filter requirements, query-time access control) are not typed contracts; they belong in `agent.md` or `task.md`; do not include them in `common.md`
+- must not contain a `## cross-component references` section; runtime enforcement notes at component boundaries are behavioral rules, not typed contracts — place them in `agent.md` or `task.md`
+- must not include models labeled "spec only", "future", or "implementation is future" in the spec; include only models required by the current components in `build-order.md`; section headings must not imply speculative or future status
 
 ---
 
@@ -131,6 +133,10 @@ a project-specific execution guide for coding agents generated from the spec.
 - dependency handling notes
 - validation expectations for this project's stack
 - how to transition between tasks
+
+### rules
+
+- sequencing rules must clearly distinguish build order from runtime validation flows; do not use arrow notation (`→`) in sequencing rules to describe runtime data-flow or test validation paths — such notation implies build sequence and may contradict `build-order.md`; label validation flows explicitly (e.g., "run end-to-end validation once components X, Y, Z are built per `build-order.md`")
 
 ---
 

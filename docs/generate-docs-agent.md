@@ -32,6 +32,7 @@ docs/generated/
 - identify libraries and services
 - determine dependencies
 - generate build order: every row in `build-order.md` must include an explicit dependency declaration in its notes column; if a component has no dependencies on other libs or services, the notes must say so explicitly (e.g., "No lib dependencies."); silence is not valid; the agent must inspect the spec for each component and make a deliberate, stated determination; dependency declarations must reflect current definitive state only — speculative or conditional future dependency clauses (e.g., "if a later task aligns X with Y, add Z as a dependency") are forbidden
+- generate `task.md` sequencing rules that clearly distinguish build order from runtime validation flow; do not use arrow notation (`→`) in sequencing rules to describe runtime data-flow validation paths — such notation implies build sequence and may contradict `build-order.md`; label validation flows explicitly (e.g., "run end-to-end ingestion validation", "runtime data-flow path") and reference `build-order.md` for the authoritative build sequence
 - extract shared contracts
 - generate project-level docs
 - generate component planning docs
@@ -64,6 +65,7 @@ docs/generated/
 - enforce ordering
 - no circular dependencies
 - the project-level `agent.md` must include a rationale entry for every component in the build order, not only the components with the most obvious dependency chains; components that appear to have no upstream lib dependencies must still state why they are positioned where they are
+- dependency rationale entries must not reference phase labels or implementation milestones (e.g., "Phase-1-style libs"); use concrete, current dependency descriptions (e.g., "depends only on libs at compile time; no service-package imports")
 
 ---
 
@@ -84,6 +86,8 @@ all task content must satisfy the artifact and dependency rules defined in `stan
 - the annotation "(names only; shapes in spec)" or any equivalent deferral is forbidden; if the spec defines a model, its typed fields belong in `common.md`
 - each `Literal` type must appear exactly once in `common.md`'s `## literals` block; subsequent code blocks must reference it via inline comment and must not re-declare the type
 - behavioral enforcement rules (runtime ACL filters, query-time access control, etc.) are not typed contracts; do not place them in `common.md` — they belong in `agent.md` or `task.md`
+- do not create a `## cross-component references` section in `common.md`; runtime enforcement notes describing behavior at component boundaries (e.g., ACL filter application at query time, broker boundary message ID opacity) are behavioral rules, not typed contracts — place them in `agent.md` or `task.md`
+- do not include models labeled "spec only", "future", or "implementation is future" in `common.md`, even when the spec provides their full shape; include only models required by the current components in `build-order.md`; do not use section headings that imply speculative or future status (e.g., "future connector source configs (spec shapes)")
 
 ---
 
