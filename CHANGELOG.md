@@ -374,3 +374,31 @@ No files under `docs/generated/` were modified in this pass.
 **Change:** Added rule: `task.md` sequencing rules must clearly distinguish build order from runtime validation flow. Arrow notation (`→`) in sequencing rules implies build sequence — forbidden for describing runtime data-flow validation paths. Validation flows must be labeled explicitly (e.g., "run end-to-end ingestion validation once components X, Y, Z are built per `build-order.md`").
 
 ---
+
+## REFACTOR.md applied — 2026-04-28 (rag-platform, phase00-documentation)
+
+**Source:** `~/.spec-compiler/REFACTOR.md` (principal AI/ML review of `docs/generated/`)
+**Scope:** Surgical edits to `docs/generated/common.md` only. No other generated files touched; no regeneration performed.
+
+### Files modified
+
+#### `docs/generated/common.md`
+
+| Line | Change |
+|------|--------|
+| 3 | Removed meta-commentary sentence from preamble. Retained only: `Shared typed contracts for \`rag-platform\`.` |
+| 133 | `classification: str` → `classification: ClassificationLevel  # ClassificationLevel: see ## literals block above` in `ChunkPayload` |
+
+### Files passing review (no changes required)
+
+- `docs/generated/build-order.md` — PASS
+- `docs/generated/agent.md` — PASS
+- `docs/generated/task.md` — PASS
+- `docs/generated/prompt-component-planning.md` — PASS
+
+### Rules enforced
+
+- `project-template.md` § common.md rules: "must not contain authoring instructions, agent directives, or meta-commentary"
+- `generate-docs-agent.md` § contract centralization: all fields must use Pydantic v2 type annotations; canonical `Literal` types must not be loosened to bare `str`
+
+---
