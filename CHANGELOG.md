@@ -402,3 +402,31 @@ No files under `docs/generated/` were modified in this pass.
 - `generate-docs-agent.md` § contract centralization: all fields must use Pydantic v2 type annotations; canonical `Literal` types must not be loosened to bare `str`
 
 ---
+
+## REFACTOR.md applied — 2026-04-28 (rag-platform, phase00-documentation) — second surgical pass
+
+**Source:** `~/.spec-compiler/REFACTOR.md` (principal AI/ML engineer, same review pass)
+**Scope:** Two remaining issues in `docs/generated/common.md` not addressed in the prior pass. No other generated files touched; no regeneration performed.
+
+### Files modified
+
+#### `docs/generated/common.md`
+
+| Line | Change |
+|------|--------|
+| 117 | `classification: str` → `classification: ClassificationLiteral  # ClassificationLiteral: see ## literals block above; spec.md defines this as str — tightened here to canonical literal for consistency` in `ChunkPayload` |
+| 230–234 | Removed entire `## rules` section (2 bullets: agent directive + meta-commentary) |
+
+**spec.md verification (Issue 2):** `spec.md` line 445 explicitly types `ChunkPayload.classification` as `str`. Per REFACTOR.md instructions, the field was tightened to `ClassificationLiteral` with an inline comment documenting the deviation rather than silently accepting the wider type.
+
+### Files passing review (no changes required)
+
+- `docs/generated/build-order.md` — PASS
+- `docs/generated/agent.md` — PASS
+- `docs/generated/task.md` — PASS
+- `docs/generated/prompt-component-planning.md` — PASS
+
+### Rules enforced
+
+- `project-template.md` § common.md rules: "must not contain authoring instructions, agent directives, or meta-commentary"
+- `generate-docs-agent.md` § contract centralization: all fields must use Pydantic v2 annotations; each `Literal` type declared once; subsequent blocks reference via inline comment
