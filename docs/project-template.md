@@ -110,6 +110,7 @@ defines shared contracts across the system.
 - must not include models labeled "spec only", "future", or "implementation is future" in the spec; include only models required by the current components in `build-order.md`; section headings must not imply speculative or future status
 - preamble must consist of exactly one sentence identifying the project: `Shared typed contracts for \`<project-name>\`.` — no trailing sentences about excluded content, no pointers to other documents, no meta-commentary of any kind
 - any field whose value set is fully covered by a canonical `Literal` alias from the `## literals` block must use that alias as its annotation; a wider type such as `str` is not permitted even when the source spec uses it; document the tightening with an inline comment (e.g., `# ClassificationLiteral: tightened from str — see ## literals block above`)
+- every `Literal` type declared in the `## literals` block must be traceable: either (a) it appears as a field annotation in the `## models` block with a referencing inline comment, or (b) the `## literals` entry itself carries an inline comment naming its consumer component (e.g., `# used by libs/connector_registry — not a model field`); a declared `Literal` with no field reference and no documented consumer violates the minimality rule and must be removed
 
 ---
 

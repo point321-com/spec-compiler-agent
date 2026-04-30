@@ -523,3 +523,34 @@ No files under `docs/generated/` were modified in this pass.
 `generate-docs-agent.md` (`## responsibilities` build-order bullet): Appended clause — service-to-service runtime HTTP dependencies are ordering dependencies; the called service must appear before the calling service in `build-order.md` with the dependency declared in notes, or the notes must explicitly state the deferral with a named later integration point; omitting a spec-documented service-to-service dependency is not valid.
 
 `generate-docs-agent.md` (`### 3. dependency-first design`): Added bullet — service-to-service runtime dependencies must be treated as first-class ordering constraints identical to lib-to-service dependencies; when the spec states a service calls another service over HTTP, the provider must appear before the consumer in `build-order.md` and be declared in the consumer's notes column; if implementation sequence genuinely demands building the consumer first, the consumer's notes must state the deferral explicitly with a named later integration point.
+
+---
+
+## REFACTOR.md applied — 2026-04-30 (rag-platform, phase00-documentation) — third pass
+
+**Source:** `~/.spec-compiler/REFACTOR.md` (generated 2026-04-30, principal AI/ML engineer review)
+**Scope:** Source template fixes only. No files under `docs/generated/` were modified; regeneration is a separate pass.
+
+---
+
+### REFACTOR-01 — common.md: `ConnectorRunModeFieldLiteral` declared but not referenced in any model field (NEW)
+
+**Files:**
+- `~/.spec-compiler/docs/project-template.md` — `## common.md` → `### rules` (+1 rule)
+- `~/.spec-compiler/docs/generate-docs-agent.md` — `### 5. contract centralization` (+1 bullet)
+
+**Problem:** `ConnectorRunModeFieldLiteral = Literal["cronjob", "daemon"]` appeared in the `## literals` block of `docs/generated/common.md` with no corresponding field annotation in any model and no inline comment documenting its consumer. No existing template rule required declared `Literal` types to be traceable to either a model field or a named consumer. The generator could add a `Literal` that satisfied the "declare once" rule while remaining entirely unused and undocumented.
+
+**Change:** Added rule to both files: every `Literal` type declared in the `## literals` block must be traceable — either (a) it appears as a field annotation in the `## models` block with a referencing inline comment, or (b) the `## literals` entry itself carries an inline comment naming its consumer component. A declared `Literal` with no field reference and no documented consumer violates the minimality rule and must be removed.
+
+---
+
+### REFACTOR-02 — common.md: `AuditLogDestinationLiteral` declared but not referenced in any model field (NEW)
+
+**Files:**
+- `~/.spec-compiler/docs/project-template.md` — `## common.md` → `### rules` (same rule as REFACTOR-01)
+- `~/.spec-compiler/docs/generate-docs-agent.md` — `### 5. contract centralization` (same bullet as REFACTOR-01)
+
+**Problem:** `AuditLogDestinationLiteral = Literal["stdout", "file"]` appeared in the `## literals` block with no field annotation in `AuditRecordQuery` or any other model. Same root cause as Finding 1 — no rule required traceability for declared `Literal` types.
+
+**Change:** Covered by the same rule added for REFACTOR-01. Both findings share a single template fix target; the rule was added once and covers all future undocumented `Literal` declarations.
