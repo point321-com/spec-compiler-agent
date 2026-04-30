@@ -87,6 +87,7 @@ defines global implementation order.
 - preamble must contain only the global sequence ordering statement; do not include scope constraints, phase validation notes, or any spec prose beyond sequencing intent
 - dependency notes must declare current definitive state only; speculative or conditional future dependency clauses are forbidden
 - dependency notes must include service-to-service runtime dependencies; when the spec states that a service calls another service over HTTP or a documented runtime protocol (e.g., at startup or on a scheduled run), the called service must either appear earlier in the build order with that dependency declared in the notes column, or the calling service's notes must explicitly state the dependency is intentionally deferred to a named later integration task; omitting a spec-documented service-to-service runtime dependency is not valid
+- each dependency in a notes entry must be named by its exact component path (e.g., `libs/models`, `libs/auth`); grouping shorthand (e.g., "Phase-1 libs", "other shared libs") is forbidden even when combined with explicitly named entries; conditional qualifiers (e.g., "as needed", "if needed") are forbidden; every dependency must be a definitive, named, current-state fact
 
 ---
 

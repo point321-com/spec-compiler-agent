@@ -557,6 +557,25 @@ No files under `docs/generated/` were modified in this pass.
 
 ---
 
+## REFACTOR.md applied — 2026-04-30 (rag-platform, phase00-documentation) — fourth pass
+
+**Source:** `~/.spec-compiler/REFACTOR.md` (generated 2026-04-30, principal AI/ML engineer review)
+**Scope:** Source template fixes only. No files under `docs/generated/` were modified; regeneration is a separate pass.
+
+---
+
+### REFACTOR-01 — build-order.md: dependency notes must name each component by exact path; grouping shorthand and conditional qualifiers forbidden (REGRESSION)
+
+**Files:**
+- `~/.spec-compiler/docs/project-template.md` — `## build-order.md` → `### requirements` (+1 rule)
+- `~/.spec-compiler/docs/generate-docs-agent.md` — `## responsibilities` build-order bullet (clause appended)
+
+**Problem:** `docs/generated/build-order.md` row 9 (`services/embedding-api`) notes read: "Depends on `libs/models`, `libs/observability`, and other Phase-1 libs wired into the service package as needed; no service-to-service runtime consumer required for its own build." Three violations: (1) phase label "Phase-1 libs", (2) grouping shorthand "other Phase-1 libs" without naming each dependency by path, (3) conditional qualifier "as needed". The existing rules already prohibited phase labels and speculative/conditional clauses, but neither rule explicitly prohibited grouping shorthand or required every dependency to be identified by its exact component path. The generator could satisfy the prior wording by naming some libs explicitly while collapsing the rest into a phase-label group with a conditional.
+
+**Change:** Added rule to `project-template.md` `## build-order.md` → `### requirements`: each dependency in a notes entry must be named by its exact component path (e.g., `libs/models`, `libs/auth`); grouping shorthand (e.g., "Phase-1 libs", "other shared libs") is forbidden even when combined with explicitly named entries; conditional qualifiers (e.g., "as needed", "if needed") are forbidden; every dependency must be a definitive, named, current-state fact. Appended matching clause to the build-order bullet in `generate-docs-agent.md` `## responsibilities`.
+
+---
+
 ## Source template fix — 2026-04-30 (project `task.md` consumption)
 
 **Scope:** Source template fixes only. No files under `docs/generated/` were modified; regeneration is a separate pass.
