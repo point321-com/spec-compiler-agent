@@ -470,6 +470,37 @@ No files under `docs/generated/` were modified in this pass.
 
 ---
 
+## REFACTOR.md applied — 2026-04-30 (rag-platform, phase00-documentation) — second pass
+
+**Source:** `~/.spec-compiler/REFACTOR.md` (generated 2026-04-30, principal AI/ML engineer review)
+**Scope:** Source template fixes only. No files under `docs/generated/` were modified; regeneration is a separate pass.
+
+---
+
+### REFACTOR-01 — task.md: prohibit milestone language in scope descriptions (NEW)
+
+**Files:**
+- `~/.spec-compiler/docs/project-template.md` — `## task.md (project-level)` → `### rules` (+1 rule)
+- `~/.spec-compiler/docs/generate-docs-agent.md` — `### 3. dependency-first design` (+1 bullet)
+
+**Problem:** `docs/generated/task.md` line 33 used "Day 1" and "later work" as scope markers. The REFACTOR-03 rule (2026-04-29) required scope descriptions to use concrete `build-order.md` component names without phase or milestone language, but that rule was only added to the dependency rationale guidance for `agent.md` — it was never extended to `task.md`.
+
+**Change:** Added rule to `project-template.md` `## task.md (project-level)` → `### rules`: scope descriptions must use `build-order.md` component names; phase labels, milestone names, release-stage language, and time-relative markers ("Day 1", "later work", "first pass") are forbidden substitutes. Added matching bullet to `generate-docs-agent.md` `### 3. dependency-first design` extending the scope-description rule to all project-level generated documents including `task.md`.
+
+---
+
+### REFACTOR-02 — agent.md: extend phase-label prohibition to purpose section (NEW)
+
+**Files:**
+- `~/.spec-compiler/docs/generate-docs-agent.md` — `### 3. dependency-first design` (+1 bullet)
+- `~/.spec-compiler/docs/project-template.md` — `## agent.md (project-level)` → `### includes` (+1 bullet)
+
+**Problem:** `docs/generated/agent.md` line 5 (purpose section) used "validated first" — a sequencing/phase marker. The existing rule in `generate-docs-agent.md` rule 3 targeted dependency rationale entries only; it did not explicitly cover the `## purpose` section.
+
+**Change:** Added bullet to `generate-docs-agent.md` `### 3. dependency-first design` explicitly applying the scope-description rule to every section of `agent.md` including `## purpose`, and prohibiting phase-adjacent sequencing language ("validated first", "initial phase", "first pass") in any section. Added matching note to `project-template.md` `## agent.md (project-level)` → `### includes` stating the `## purpose` section must not use phase labels, milestone names, or sequencing markers.
+
+---
+
 ## REFACTOR.md applied — 2026-04-30 (rag-platform, phase00-documentation)
 
 **Source:** `~/.spec-compiler/REFACTOR.md` (generated 2026-04-30, principal AI/ML engineer review)

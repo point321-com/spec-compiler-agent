@@ -121,6 +121,7 @@ a project-specific distillation generated from the spec. tells subsequent agents
 
 - identified libraries and services with their roles
 - dependency ordering rationale: **every library and service in the build order must have an explicit rationale entry** — not just the primary chains; explain why each component is positioned where it is relative to its neighbors; rationale must not use phase labels, milestone names, or release-stage language; describe only current concrete dependency facts
+- the `## purpose` section must not use phase labels, milestone names, or sequencing markers to describe build scope; state scope concretely using `build-order.md` component names
 - project-specific constraints or deviations from general standards
 - component breakdown and boundaries
 
@@ -140,6 +141,7 @@ a project-specific execution guide for coding agents generated from the spec.
 ### rules
 
 - sequencing rules must clearly distinguish build order from runtime validation flows; do not use arrow notation (`→`) in sequencing rules to describe runtime data-flow or test validation paths — such notation implies build sequence and may contradict `build-order.md`; label validation flows explicitly (e.g., "run end-to-end validation once components X, Y, Z are built per `build-order.md`")
+- scope descriptions in `task.md` must state the concrete reason using `build-order.md` component names (e.g., "only `FilesystemSourceConfig` is in scope per current `build-order.md`"); do not use phase labels, milestone names, release-stage language, or time-relative markers (e.g., "Day 1", "later work", "first pass") as substitutes for a concrete scope statement
 
 ---
 
