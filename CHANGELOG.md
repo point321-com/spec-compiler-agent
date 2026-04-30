@@ -430,3 +430,40 @@ No files under `docs/generated/` were modified in this pass.
 
 - `project-template.md` § common.md rules: "must not contain authoring instructions, agent directives, or meta-commentary"
 - `generate-docs-agent.md` § contract centralization: all fields must use Pydantic v2 annotations; each `Literal` type declared once; subsequent blocks reference via inline comment
+
+---
+
+## REFACTOR.md applied — 2026-04-29 (rag-platform, phase00-documentation)
+
+**Source:** `~/.spec-compiler/REFACTOR.md` (generated 2026-04-29, principal AI/ML engineer review)
+**Scope:** Source template fixes only. No files under `docs/generated/` were modified; regeneration is a separate pass.
+
+---
+
+### REFACTOR-01 — common.md preamble: one-liner shape made unambiguous (REGRESSION)
+
+**Files:**
+- `~/.spec-compiler/docs/project-template.md` — `## common.md` → `### rules`
+- `~/.spec-compiler/docs/generate-docs-agent.md` — `### 5. contract centralization`
+
+**Change:** Added explicit rule in both files stating the preamble must be exactly one sentence: `Shared typed contracts for \`<project-name>\`.` — no trailing sentences about excluded content, no pointers to other documents, no meta-commentary of any kind. Prior surgical pass (2026-04-28) fixed the output directly; the template did not encode the allowed shape, allowing regeneration to grow the preamble back.
+
+---
+
+### REFACTOR-02 — common.md Literal tightening: explicit rule with named example (SPIN)
+
+**Files:**
+- `~/.spec-compiler/docs/project-template.md` — `## common.md` → `### rules`
+- `~/.spec-compiler/docs/generate-docs-agent.md` — `### 5. contract centralization`
+
+**Change:** Added rule in both files: when a field's value set is fully covered by a canonical `Literal` alias in the `## literals` block, that alias must be used as the annotation — not `str` or any wider type — even when the spec types the field as `str`. Named `ChunkPayload.classification` as the canonical example with required inline comment format. Rule names the principle so it applies to all future fields, not only this one. Prior template wording did not address the case where the spec itself uses a wider type, leaving the generator free to follow the spec rather than tighten it.
+
+---
+
+### REFACTOR-03 — agent.md dependency rationale: required substitute pattern for phase labels (REGRESSION)
+
+**Files:**
+- `~/.spec-compiler/docs/generate-docs-agent.md` — `### 3. dependency-first design`
+- `~/.spec-compiler/docs/project-template.md` — `## agent.md (project-level)` → `### includes`
+
+**Change:** Extended the existing phase-label prohibition in both files with a required substitute pattern: when describing scope or current build scope, state the concrete reason using `build-order.md` component names (e.g., "only `FilesystemSourceConfig` is in scope per current `build-order.md`") — not a phase label. Also added explicit language to the `project-template.md` dependency ordering rationale bullet: "rationale must not use phase labels, milestone names, or release-stage language; describe only current concrete dependency facts." The prior rule prohibited phase labels but offered no substitute, leaving the generator to reach for phase language when expressing scope constraints.

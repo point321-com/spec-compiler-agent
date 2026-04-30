@@ -107,6 +107,8 @@ defines shared contracts across the system.
 - behavioral enforcement rules (e.g., runtime ACL filter requirements, query-time access control) are not typed contracts; they belong in `agent.md` or `task.md`; do not include them in `common.md`
 - must not contain a `## cross-component references` section; runtime enforcement notes at component boundaries are behavioral rules, not typed contracts — place them in `agent.md` or `task.md`
 - must not include models labeled "spec only", "future", or "implementation is future" in the spec; include only models required by the current components in `build-order.md`; section headings must not imply speculative or future status
+- preamble must consist of exactly one sentence identifying the project: `Shared typed contracts for \`<project-name>\`.` — no trailing sentences about excluded content, no pointers to other documents, no meta-commentary of any kind
+- any field whose value set is fully covered by a canonical `Literal` alias from the `## literals` block must use that alias as its annotation; a wider type such as `str` is not permitted even when the source spec uses it; document the tightening with an inline comment (e.g., `# ClassificationLiteral: tightened from str — see ## literals block above`)
 
 ---
 
@@ -117,7 +119,7 @@ a project-specific distillation generated from the spec. tells subsequent agents
 ### includes
 
 - identified libraries and services with their roles
-- dependency ordering rationale: **every library and service in the build order must have an explicit rationale entry** — not just the primary chains; explain why each component is positioned where it is relative to its neighbors
+- dependency ordering rationale: **every library and service in the build order must have an explicit rationale entry** — not just the primary chains; explain why each component is positioned where it is relative to its neighbors; rationale must not use phase labels, milestone names, or release-stage language; describe only current concrete dependency facts
 - project-specific constraints or deviations from general standards
 - component breakdown and boundaries
 

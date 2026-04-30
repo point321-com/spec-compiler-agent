@@ -66,6 +66,7 @@ docs/generated/
 - no circular dependencies
 - the project-level `agent.md` must include a rationale entry for every component in the build order, not only the components with the most obvious dependency chains; components that appear to have no upstream lib dependencies must still state why they are positioned where they are
 - dependency rationale entries must not reference phase labels or implementation milestones (e.g., "Phase-1-style libs"); use concrete, current dependency descriptions (e.g., "depends only on libs at compile time; no service-package imports")
+- when describing scope or current build scope (e.g., only certain source types supported in this release), state the concrete reason using `build-order.md` component names (e.g., "only `FilesystemSourceConfig` is in scope per current `build-order.md`") — do not use phase labels, milestone names, or release-stage language as a substitute for a concrete scope description
 
 ---
 
@@ -88,6 +89,8 @@ all task content must satisfy the artifact and dependency rules defined in `stan
 - behavioral enforcement rules (runtime ACL filters, query-time access control, etc.) are not typed contracts; do not place them in `common.md` — they belong in `agent.md` or `task.md`
 - do not create a `## cross-component references` section in `common.md`; runtime enforcement notes describing behavior at component boundaries (e.g., ACL filter application at query time, broker boundary message ID opacity) are behavioral rules, not typed contracts — place them in `agent.md` or `task.md`
 - do not include models labeled "spec only", "future", or "implementation is future" in `common.md`, even when the spec provides their full shape; include only models required by the current components in `build-order.md`; do not use section headings that imply speculative or future status (e.g., "future connector source configs (spec shapes)")
+- the preamble of `common.md` must be exactly one line identifying the project: `Shared typed contracts for \`<project-name>\`.` — no meta-commentary about absent content, no pointers to other documents, no trailing sentences of any kind
+- when a field's value set is fully covered by a canonical `Literal` alias in the `## literals` block, the field annotation must use that alias, not `str` or any wider type — even when the spec types the field as `str`; `ChunkPayload.classification` is typed as `str` in `spec.md` but must be annotated `ClassificationLiteral` in `common.md` with an inline comment documenting the tightening (e.g., `# ClassificationLiteral: tightened from str — see ## literals block above`); this principle applies to all such fields, not only `ChunkPayload.classification`
 
 ---
 
