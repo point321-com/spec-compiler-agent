@@ -32,7 +32,8 @@ libs/
     ├── 00-<task-name>.md
     ├── <task-name>-done.md
     ├── common.md          → symlink: ../../docs/generated/common.md
-    └── build-order.md     → symlink: ../../docs/generated/build-order.md
+    ├── build-order.md     → symlink: ../../docs/generated/build-order.md
+    └── task.md            → symlink: ../../docs/generated/task.md
 services/
 └── <service-name>/
     ├── agent.md
@@ -41,7 +42,8 @@ services/
     ├── 00-<task-name>.md
     ├── <task-name>-done.md
     ├── common.md          → symlink: ../../docs/generated/common.md
-    └── build-order.md     → symlink: ../../docs/generated/build-order.md
+    ├── build-order.md     → symlink: ../../docs/generated/build-order.md
+    └── task.md            → symlink: ../../docs/generated/task.md
 ```
 
 ---
@@ -56,6 +58,7 @@ when creating a new component directory (`libs/<name>/` or `services/<name>/`), 
 ```
 ln -s ../../docs/generated/common.md     libs/<name>/common.md
 ln -s ../../docs/generated/build-order.md libs/<name>/build-order.md
+ln -s ../../docs/generated/task.md       libs/<name>/task.md
 ```
 
 for services:
@@ -63,9 +66,10 @@ for services:
 ```
 ln -s ../../docs/generated/common.md     services/<name>/common.md
 ln -s ../../docs/generated/build-order.md services/<name>/build-order.md
+ln -s ../../docs/generated/task.md       services/<name>/task.md
 ```
 
-this ensures the agent operating inside the component directory can read shared contracts without leaving its working scope.
+this ensures the agent operating inside the component directory can read shared contracts, global ordering, and project-specific execution guidance without leaving its working scope.
 
 ---
 
@@ -123,6 +127,7 @@ a project-specific distillation generated from the spec. tells subsequent agents
 - identified libraries and services with their roles
 - dependency ordering rationale: **every library and service in the build order must have an explicit rationale entry** — not just the primary chains; explain why each component is positioned where it is relative to its neighbors; rationale must not use phase labels, milestone names, or release-stage language; describe only current concrete dependency facts
 - the `## purpose` section must not use phase labels, milestone names, or sequencing markers to describe build scope; state scope concretely using `build-order.md` component names
+- explicit reference to `docs/generated/task.md` as the project-specific execution guide that component-planning and coding agents must read before generating or implementing component tasks
 - project-specific constraints or deviations from general standards
 - component breakdown and boundaries
 
@@ -188,6 +193,7 @@ Read in this order:
 4. docs/generated/build-order.md
 5. docs/generated/common.md
 6. docs/generated/agent.md
+7. docs/generated/task.md
 
 Execute mode: component-planning
 
@@ -226,6 +232,7 @@ Read in this order:
 4. <component>/common.md
 5. <component>/agent.md
 6. <component>/tasks.md
+7. <component>/task.md
 
 Execute mode: component-tasks
 Component: <component>
@@ -260,6 +267,7 @@ every task file must follow this exact structure. no sections may be omitted.
 
 - common.md
 - build-order.md
+- task.md
 - agent.md
 - <prior-task>-done.md
 
@@ -312,7 +320,7 @@ every task file must follow this exact structure. no sections may be omitted.
 ### rules
 
 - every section is mandatory
-- `reads` must list every doc and prior task the agent needs — no implicit context
+- `reads` must list every doc and prior task the agent needs — no implicit context; project-level `task.md` is mandatory for every generated task because it carries project-specific sequencing, dependency, validation, and transition guidance
 - `writes` must list exact file paths under `ROOT/libs/` or `ROOT/services/` only
 - `artifact` must define a concrete, testable unit — not a folder, stub, or TODO
 - `functional tests` section is required unless no runnable boundary exists; state the reason if omitted

@@ -35,7 +35,7 @@ docs/generated/
 - generate `task.md` sequencing rules that clearly distinguish build order from runtime validation flow; do not use arrow notation (`→`) in sequencing rules to describe runtime data-flow validation paths — such notation implies build sequence and may contradict `build-order.md`; label validation flows explicitly (e.g., "run end-to-end ingestion validation", "runtime data-flow path") and reference `build-order.md` for the authoritative build sequence
 - extract shared contracts
 - generate project-level docs
-- generate component planning docs
+- generate component planning docs; generated component-planning prompts must read `docs/generated/task.md` after `docs/generated/agent.md` so project-specific execution guidance informs component task planning
 - generate detailed task breakdowns for each component
 
 ---
@@ -78,6 +78,8 @@ docs/generated/
 all generated task documents must conform exactly to the task file format defined in `project-template.md`.
 
 all task content must satisfy the artifact and dependency rules defined in `standards.md`.
+
+all generated task documents must list project-level `task.md` in `## reads`; component-level task generation must not omit project-specific sequencing, dependency, validation, or transition guidance.
 
 ---
 
@@ -169,6 +171,7 @@ before writing any files for a component:
 2. create symlinks to shared project docs:
    - `ln -s ../../docs/generated/common.md     <component>/common.md`
    - `ln -s ../../docs/generated/build-order.md <component>/build-order.md`
+   - `ln -s ../../docs/generated/task.md       <component>/task.md`
 
 then generate per component:
 

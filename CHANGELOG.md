@@ -554,3 +554,19 @@ No files under `docs/generated/` were modified in this pass.
 **Problem:** `AuditLogDestinationLiteral = Literal["stdout", "file"]` appeared in the `## literals` block with no field annotation in `AuditRecordQuery` or any other model. Same root cause as Finding 1 — no rule required traceability for declared `Literal` types.
 
 **Change:** Covered by the same rule added for REFACTOR-01. Both findings share a single template fix target; the rule was added once and covers all future undocumented `Literal` declarations.
+
+---
+
+## Source template fix — 2026-04-30 (project `task.md` consumption)
+
+**Scope:** Source template fixes only. No files under `docs/generated/` were modified; regeneration is a separate pass.
+
+### Issue — project-level `task.md` generated but not consumed
+
+**Files:**
+- `~/.spec-compiler/docs/project-template.md` — generated structure, component directory setup, `agent.md` includes, generated prompt templates, and task file format
+- `~/.spec-compiler/docs/generate-docs-agent.md` — responsibilities, artifact/format enforcement, and component-planning setup
+
+**Problem:** `docs/project-template.md` defines project-level `task.md` as the project-specific execution guide for sequencing rules, dependency handling notes, validation expectations, and task transitions. However, the generated workflow did not make that file part of the downstream context: `prompt-component-planning.md` did not read it, component directories did not symlink it, component task prompts did not read it, and generated task files did not list it in `## reads`.
+
+**Change:** Added `task.md` as a shared component symlink, required generated `agent.md` to point planning and coding agents to `docs/generated/task.md`, added it to generated component-planning and component-task prompt read lists, added it to the generated task file `## reads` template, and added matching generator rules requiring component-planning prompts and task documents to consume project-specific execution guidance.
