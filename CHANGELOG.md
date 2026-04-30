@@ -467,3 +467,28 @@ No files under `docs/generated/` were modified in this pass.
 - `~/.spec-compiler/docs/project-template.md` — `## agent.md (project-level)` → `### includes`
 
 **Change:** Extended the existing phase-label prohibition in both files with a required substitute pattern: when describing scope or current build scope, state the concrete reason using `build-order.md` component names (e.g., "only `FilesystemSourceConfig` is in scope per current `build-order.md`") — not a phase label. Also added explicit language to the `project-template.md` dependency ordering rationale bullet: "rationale must not use phase labels, milestone names, or release-stage language; describe only current concrete dependency facts." The prior rule prohibited phase labels but offered no substitute, leaving the generator to reach for phase language when expressing scope constraints.
+
+---
+
+## REFACTOR.md applied — 2026-04-30 (rag-platform, phase00-documentation)
+
+**Source:** `~/.spec-compiler/REFACTOR.md` (generated 2026-04-30, principal AI/ML engineer review)
+**Scope:** Source template fixes only. No files under `docs/generated/` were modified; regeneration is a separate pass.
+
+---
+
+### REFACTOR-01 — build-order.md: service-to-service runtime HTTP dependencies must be declared (NEW)
+
+**Files:**
+- `~/.spec-compiler/docs/project-template.md` — `## build-order.md` → `### requirements`
+- `~/.spec-compiler/docs/generate-docs-agent.md` — `## responsibilities` build-order bullet; `### 3. dependency-first design`
+
+**Problem:** `services/connector-filesystem` was ordered at position 10, before `services/mgmt-api` at position 12. Its dependency notes listed only library dependencies and described "mgmt-api service identity" but did not declare the actual `services/mgmt-api` runtime HTTP dependency. The spec and generated `task.md` both state that `connector-filesystem` calls `mgmt-api` over HTTP at startup and on scheduled runs to fetch `ConnectorConfig` records. The prior template rules required explicit dependency declarations for all rows and prohibited speculative clauses, but neither rule specifically addressed service-to-service runtime HTTP dependencies as ordering constraints — only lib dependencies were mentioned by example, leaving the generator free to list libs while omitting a service-to-service runtime call.
+
+**Changes:**
+
+`project-template.md` (`## build-order.md` → `### requirements`): Added rule — dependency notes must include service-to-service runtime dependencies; when the spec states a service calls another service over HTTP or a documented runtime protocol at startup or at runtime, the called service must either appear earlier in the build order with the dependency declared in the notes column, or the calling service's notes must explicitly state the dependency is intentionally deferred to a named later integration task; omitting a spec-documented service-to-service runtime dependency is not valid.
+
+`generate-docs-agent.md` (`## responsibilities` build-order bullet): Appended clause — service-to-service runtime HTTP dependencies are ordering dependencies; the called service must appear before the calling service in `build-order.md` with the dependency declared in notes, or the notes must explicitly state the deferral with a named later integration point; omitting a spec-documented service-to-service dependency is not valid.
+
+`generate-docs-agent.md` (`### 3. dependency-first design`): Added bullet — service-to-service runtime dependencies must be treated as first-class ordering constraints identical to lib-to-service dependencies; when the spec states a service calls another service over HTTP, the provider must appear before the consumer in `build-order.md` and be declared in the consumer's notes column; if implementation sequence genuinely demands building the consumer first, the consumer's notes must state the deferral explicitly with a named later integration point.

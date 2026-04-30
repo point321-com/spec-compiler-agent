@@ -82,6 +82,7 @@ defines global implementation order.
 - every row must carry an explicit dependency declaration; "no lib dependencies" is a valid and required declaration when true
 - preamble must contain only the global sequence ordering statement; do not include scope constraints, phase validation notes, or any spec prose beyond sequencing intent
 - dependency notes must declare current definitive state only; speculative or conditional future dependency clauses are forbidden
+- dependency notes must include service-to-service runtime dependencies; when the spec states that a service calls another service over HTTP or a documented runtime protocol (e.g., at startup or on a scheduled run), the called service must either appear earlier in the build order with that dependency declared in the notes column, or the calling service's notes must explicitly state the dependency is intentionally deferred to a named later integration task; omitting a spec-documented service-to-service runtime dependency is not valid
 
 ---
 
