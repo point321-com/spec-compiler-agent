@@ -69,6 +69,7 @@ docs/generated/
 - when describing scope or current build scope (e.g., only certain source types supported in this release), state the concrete reason using `build-order.md` component names (e.g., "only `FilesystemSourceConfig` is in scope per current `build-order.md`") — do not use phase labels, milestone names, or release-stage language as a substitute for a concrete scope description
 - the same scope-description rule applies to all project-level generated documents, including `task.md`; when `task.md` describes which components or source configs are currently in scope, state the concrete reason using `build-order.md` component names; do not use phase labels, milestone names, or time-relative markers (e.g., "Day 1", "later work") in any section of any generated project-level document
 - this scope-description rule applies to every section of `agent.md`, including the `## purpose` section; when the purpose describes which components, source configs, or connector types are currently in scope, use the required pattern ("only `<component>` is in scope per current `build-order.md`") and do not use phase-adjacent sequencing language (e.g., "validated first", "initial phase", "first pass") in any section
+- generated component `agent.md` files must list permitted imports for each declared lib dependency; the import path from the project root is `libs/<lib-name>/src/`; a component with no declared lib dependencies must explicitly state that no lib imports are permitted; importing from an undeclared lib is forbidden
 - service-to-service runtime dependencies must be treated as first-class ordering constraints, the same as lib-to-service dependencies; when the spec states that a service calls another service over HTTP (e.g., fetching config at startup, querying an upstream API at runtime), that constitutes a dependency; the provider service must appear before the consumer in `build-order.md` and must be declared in the consumer's notes column; if the spec's required implementation sequence genuinely demands building the consumer before the provider, the consumer's notes must state the deferral explicitly with a named later integration point
 
 ---
@@ -76,6 +77,10 @@ docs/generated/
 ### 4. artifact and format enforcement
 
 all generated task documents must conform exactly to the task file format defined in `project-template.md`.
+
+all file path references in artifact descriptions, task prose, or component `tasks.md` entries must be full paths from the project root (e.g., `services/<name>/src/`, `libs/<name>/src/`); bare paths relative to any subdirectory are forbidden.
+
+when generating component-level documents (`tasks.md`, task files, `agent.md`), all path references must use full paths from the project root — for example, `docs/generated/common.md` not `common.md`, and `libs/<lib-name>/src/` not `../../libs/<lib-name>/src/`; agents are invoked from the project root, not from within the component directory.
 
 all task content must satisfy the artifact and dependency rules defined in `standards.md`.
 
@@ -168,10 +173,6 @@ content format for each document is defined in `project-template.md`. follow tho
 before writing any files for a component:
 
 1. create the component directory (`libs/<name>/` or `services/<name>/`)
-2. create symlinks to shared project docs:
-   - `ln -s ../../docs/generated/common.md     <component>/common.md`
-   - `ln -s ../../docs/generated/build-order.md <component>/build-order.md`
-   - `ln -s ../../docs/generated/task.md       <component>/task.md`
 
 then generate per component:
 
@@ -199,4 +200,4 @@ generate for a single component:
 1. spec.md — defines what to build (source of truth)
 2. standards.md — defines non-negotiable engineering rules
 3. project-template.md — defines document structure and format
-4. docs/generated/build-order.md — defines implementation sequence; `next task` fields in task files must match it exactly. build-order.md is authoritative. if a conflict exists, fix the task file. within a component directory, this is accessible as `build-order.md` via symlink.
+4. docs/generated/build-order.md — defines implementation sequence; `next task` fields in task files must match it exactly. build-order.md is authoritative. if a conflict exists, fix the task file.

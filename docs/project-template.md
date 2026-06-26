@@ -30,46 +30,21 @@ libs/
     ├── tasks.md
     ├── prompt-tasks.md
     ├── 00-<task-name>.md
-    ├── <task-name>-done.md
-    ├── common.md          → symlink: ../../docs/generated/common.md
-    ├── build-order.md     → symlink: ../../docs/generated/build-order.md
-    └── task.md            → symlink: ../../docs/generated/task.md
+    └── <task-name>-done.md
 services/
 └── <service-name>/
     ├── agent.md
     ├── tasks.md
     ├── prompt-tasks.md
     ├── 00-<task-name>.md
-    ├── <task-name>-done.md
-    ├── common.md          → symlink: ../../docs/generated/common.md
-    ├── build-order.md     → symlink: ../../docs/generated/build-order.md
-    └── task.md            → symlink: ../../docs/generated/task.md
+    └── <task-name>-done.md
 ```
 
 ---
 
 ## component directory setup
 
-when creating a new component directory (`libs/<name>/` or `services/<name>/`), the agent must:
-
-1. create the directory
-2. create the following symlinks before writing any component files:
-
-```
-ln -s ../../docs/generated/common.md     libs/<name>/common.md
-ln -s ../../docs/generated/build-order.md libs/<name>/build-order.md
-ln -s ../../docs/generated/task.md       libs/<name>/task.md
-```
-
-for services:
-
-```
-ln -s ../../docs/generated/common.md     services/<name>/common.md
-ln -s ../../docs/generated/build-order.md services/<name>/build-order.md
-ln -s ../../docs/generated/task.md       services/<name>/task.md
-```
-
-this ensures the agent operating inside the component directory can read shared contracts, global ordering, and project-specific execution guidance without leaving its working scope.
+when creating a new component directory (`libs/<name>/` or `services/<name>/`), the agent must create the directory. no symlinks are required: all agents are invoked from the project root and access shared docs directly by path (e.g., `docs/generated/common.md`, `docs/generated/build-order.md`, `docs/generated/task.md`).
 
 ---
 
@@ -79,7 +54,11 @@ defines global implementation order.
 
 ### requirements
 
-- libraries before services
+- if the spec identifies more than one service, stop and advise that the spec must be broken into separate service-specific specs before documentation can be generated
+- for a single-service project, the service must be first in the build order as a working project shell
+- the first service task scope must be limited to a runnable shell: project bootstrapping, runtime/build configuration, minimal layout or entrypoint, health/smoke validation, and feature mounting points
+- the service shell row must declare no lib dependencies unless the spec explicitly requires an external pre-existing library before the service can boot
+- libraries and feature components must follow the working service shell so each completed feature can be integrated into and validated through the runnable project surface
 - dependency-driven ordering only
 - no parallel ambiguity
 - explicit sequence
@@ -147,6 +126,8 @@ a project-specific execution guide for coding agents generated from the spec.
 
 ### rules
 
+- sequencing rules must state that the working service shell is implemented before library and feature work
+- sequencing rules must state that completed library and feature components are integrated into the working service shell through service tasks before the feature is considered validated
 - sequencing rules must clearly distinguish build order from runtime validation flows; do not use arrow notation (`→`) in sequencing rules to describe runtime data-flow or test validation paths — such notation implies build sequence and may contradict `build-order.md`; label validation flows explicitly (e.g., "run end-to-end validation once components X, Y, Z are built per `build-order.md`")
 - scope descriptions in `task.md` must state the concrete reason using `build-order.md` component names (e.g., "only `FilesystemSourceConfig` is in scope per current `build-order.md`"); do not use phase labels, milestone names, release-stage language, or time-relative markers (e.g., "Day 1", "later work", "first pass") as substitutes for a concrete scope statement
 
@@ -162,6 +143,7 @@ defines responsibilities for a specific lib or service.
 - inputs and outputs
 - dependencies
 - what the component must not do
+- permitted imports: for each lib dependency declared in `build-order.md`, state the import path from the project root (`libs/<lib-name>/src/`); importing from any lib not listed as a dependency is forbidden
 
 ---
 
@@ -175,6 +157,7 @@ defines ordered tasks for the component.
 - each task must produce an artifact
 - each task must be independently testable
 - no cross-component work
+- all file path references in artifact descriptions and task prose must be full paths from the project root (e.g., `services/<name>/src/`, `libs/<name>/src/`); bare paths relative to any subdirectory are forbidden
 
 ---
 
@@ -199,16 +182,16 @@ Read in this order:
 Execute mode: component-planning
 
 Generate:
-- libs/<lib-name>/agent.md
-- libs/<lib-name>/tasks.md
-- libs/<lib-name>/prompt-tasks.md
 - services/<service-name>/agent.md
 - services/<service-name>/tasks.md
 - services/<service-name>/prompt-tasks.md
+- libs/<lib-name>/agent.md
+- libs/<lib-name>/tasks.md
+- libs/<lib-name>/prompt-tasks.md
 
 Rules:
 - follow ~/.spec-compiler/docs/generate-docs-agent.md exactly
-- before writing any component files, create the component directory and symlink shared docs (see project-template.md: component directory setup)
+- before writing any component files, create the component directory (see project-template.md: component directory setup)
 - output only the listed files under libs/ or services/; do not summarize
 - do not generate code
 - do not generate task-level docs in this pass
@@ -219,7 +202,7 @@ Rules:
 
 ## generated prompt format: component-tasks
 
-the component-planning agent must generate one `docs/generated/<component>/prompt-tasks.md` per component using this template, with the component path and task list populated from that component's tasks.md.
+the component-planning agent must generate one `<component>/prompt-tasks.md` per component using this template, with the component path and task list populated from that component's tasks.md.
 
 ~~~markdown
 # prompt
@@ -230,10 +213,10 @@ Read in this order:
 1. ~/.spec-compiler/docs/standards.md
 2. ~/.spec-compiler/docs/project-template.md
 3. ~/.spec-compiler/docs/generate-docs-agent.md
-4. <component>/common.md
+4. docs/generated/common.md
 5. <component>/agent.md
 6. <component>/tasks.md
-7. <component>/task.md
+7. docs/generated/task.md
 
 Execute mode: component-tasks
 Component: <component>
@@ -245,10 +228,11 @@ Generate:
 
 Rules:
 - follow ~/.spec-compiler/docs/generate-docs-agent.md exactly
-- output only the listed files under <component>/; do not summarize
+- output only the listed files under `<component>/`; do not summarize
 - do not generate code
 - one component only
 - follow tasks.md order exactly
+- all paths in generated task files must be full paths from the project root
 ~~~
 
 ---
@@ -266,16 +250,16 @@ every task file must follow this exact structure. no sections may be omitted.
 
 ## reads
 
-- common.md
-- build-order.md
-- task.md
-- agent.md
-- <prior-task>-done.md
+- docs/generated/common.md
+- docs/generated/build-order.md
+- docs/generated/task.md
+- <component>/agent.md
+- <component>/<prior-task>-done.md
 
 ## writes
 
-- ROOT/libs/<lib-name>/src/<module>.py
-- ROOT/libs/<lib-name>/tests/unit/test_<module>.py
+- <component>/src/<module>.py
+- <component>/tests/unit/test_<module>.py
 
 ## artifact
 
@@ -322,7 +306,8 @@ every task file must follow this exact structure. no sections may be omitted.
 
 - every section is mandatory
 - `reads` must list every doc and prior task the agent needs — no implicit context; project-level `task.md` is mandatory for every generated task because it carries project-specific sequencing, dependency, validation, and transition guidance
-- `writes` must list exact file paths under `ROOT/libs/` or `ROOT/services/` only
+- all paths in `reads` must be full paths from the project root (e.g., `docs/generated/common.md`, `<component>/agent.md`)
+- `writes` must list full paths from the project root (e.g., `<component>/src/module.py`, `<component>/tests/unit/test_module.py`)
 - `artifact` must define a concrete, testable unit — not a folder, stub, or TODO
 - `functional tests` section is required unless no runnable boundary exists; state the reason if omitted
 - `definition of done` checkboxes must all be satisfiable before the task is considered complete

@@ -88,6 +88,18 @@ every task must explicitly declare dependencies.
 
 no implicit dependencies are allowed.
 
+### cross-component import rule
+
+a component may only import from another lib if that dependency is explicitly declared in `build-order.md` for that component. importing from a lib not listed as a dependency in `build-order.md` is forbidden.
+
+since agents are invoked from the project root, the import path to a declared dependency lib is:
+
+```
+libs/<lib-name>/src/
+```
+
+this path must be used consistently in implementation notes, task files, and any generated configuration (e.g., `pyproject.toml` path dependencies). a component with no declared lib dependencies must not import from any lib under `libs/`.
+
 ---
 
 ## testing rules
@@ -135,7 +147,7 @@ before executing any task, the agent must verify:
 
 - [ ] all files listed in `reads` exist and have been read
 - [ ] the task defines a concrete artifact (not a scaffold, stub, or TODO)
-- [ ] `writes` lists exact file paths under `ROOT/libs/` or `ROOT/services/`
+- [ ] `writes` lists full paths from the project root (e.g., `<component>/src/module.py`, `<component>/tests/unit/test_module.py`)
 - [ ] unit tests are defined in the task
 - [ ] `definition of done` criteria are all achievable
 

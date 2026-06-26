@@ -1,5 +1,105 @@
 # CHANGELOG
 
+## root-based agent invocation — 2026-05-09
+
+**problem:** stage-2 component agents were invoked from within the component directory (e.g., `cd services/product-designer && implement agent.md`). this forced two workarounds: (1) symlinks for `common.md`, `build-order.md`, and `task.md` pointing to `../../docs/generated/`, and (2) `../../` prefixes on every cross-component path reference. symlinks add filesystem complexity; `../../` paths are an anti-pattern and break when paths are read out of context.
+
+**resolution:** changed the invocation model so all agents are run from the project root (e.g., `implement services/product-designer/agent.md`). shared docs are now accessed by direct path from root. no symlinks. no `../../` notation.
+
+---
+
+### changes
+
+---
+
+#### fix 1 — generated structure: remove symlink entries
+
+**file:** `docs/project-template.md` — `## generated structure`
+
+removed `common.md`, `build-order.md`, and `task.md` symlink lines from the `libs/<lib-name>/` and `services/<service-name>/` directory trees.
+
+---
+
+#### fix 2 — component directory setup: remove symlink instructions
+
+**file:** `docs/project-template.md` — `## component directory setup`
+
+replaced the multi-step symlink creation procedure with a single directive: create the directory. no symlinks required.
+
+---
+
+#### fix 3 — component agent.md: import path updated
+
+**files:** `docs/project-template.md` — `## component agent.md` → `### includes`; `docs/generate-docs-agent.md` — `### 3. dependency-first design`
+
+changed permitted import path from `../../libs/<lib-name>/src/` to `libs/<lib-name>/src/` (from project root).
+
+---
+
+#### fix 4 — component tasks.md rules: remove `../../` path rules
+
+**file:** `docs/project-template.md` — `## component tasks.md` → `### rules`
+
+replaced the two component-relative path rules with a single rule: all file path references must be full paths from the project root.
+
+---
+
+#### fix 5 — component-planning prompt: remove symlink rule
+
+**file:** `docs/project-template.md` — `## generated prompt format: component-planning`
+
+changed "create the component directory and symlink shared docs" to "create the component directory".
+
+---
+
+#### fix 6 — component-tasks prompt: full rewrite
+
+**file:** `docs/project-template.md` — `## generated prompt format: component-tasks`
+
+removed the "Your working directory is `<component>/`..." preamble. updated reads list to use full paths from root (`docs/generated/common.md`, `<component>/agent.md`, `<component>/tasks.md`, `docs/generated/task.md`). updated Generate entries to include component prefix. updated rules to require full paths from root. updated prompt file location from `docs/generated/<component>/prompt-tasks.md` to `<component>/prompt-tasks.md`.
+
+---
+
+#### fix 7 — task file format: reads and writes updated
+
+**file:** `docs/project-template.md` — `## task file format`
+
+reads: changed `common.md`, `build-order.md`, `task.md`, `agent.md`, `<prior-task>-done.md` to full paths from root. writes: changed `src/<module>.py` to `<component>/src/<module>.py`. rules: replaced symlink-prefix and component-relative path rules with full-path-from-root rules.
+
+---
+
+#### fix 8 — generate-docs-agent.md: working directory paragraph updated
+
+**file:** `docs/generate-docs-agent.md` — `### 4. artifact and format enforcement`
+
+replaced the paragraph describing the agent's working directory as the component directory (with `../../` prefix requirement) with a statement that agents are invoked from the project root and all paths must be full paths from root.
+
+---
+
+#### fix 9 — generate-docs-agent.md: document authority symlink note removed
+
+**file:** `docs/generate-docs-agent.md` — `## document authority`
+
+removed the trailing note "within a component directory, this is accessible as `build-order.md` via symlink" from the `build-order.md` authority entry.
+
+---
+
+#### fix 10 — standards.md: cross-component import path updated
+
+**file:** `docs/standards.md` — `### cross-component import rule`
+
+changed "when the agent operates from within the component directory, the import path is `../../libs/<lib-name>/src/`" to "since agents are invoked from the project root, the import path is `libs/<lib-name>/src/`".
+
+---
+
+#### fix 11 — standards.md: task acceptance checklist updated
+
+**file:** `docs/standards.md` — `## task acceptance checklist`
+
+changed the `writes` check from "paths relative to the component directory (e.g., `src/module.py`)" to "full paths from the project root (e.g., `<component>/src/module.py`)".
+
+---
+
 ## spec-guidelines overhaul — 2026-04-28
 
 rewrote `docs/spec-guidelines.md` and added `docs/prompt-spec.md` to introduce a structured spec-generation phase before the existing planning phase.
@@ -554,6 +654,51 @@ No files under `docs/generated/` were modified in this pass.
 **Problem:** `AuditLogDestinationLiteral = Literal["stdout", "file"]` appeared in the `## literals` block with no field annotation in `AuditRecordQuery` or any other model. Same root cause as Finding 1 — no rule required traceability for declared `Literal` types.
 
 **Change:** Covered by the same rule added for REFACTOR-01. Both findings share a single template fix target; the rule was added once and covers all future undocumented `Literal` declarations.
+
+---
+
+## cross-component import rule — 2026-04-30
+
+**Problem:** No rule existed stating that a component may only import from another lib if that dependency is declared in `build-order.md`, or specifying the correct import path when operating from within the component directory.
+
+**Changes:**
+
+- `standards.md` — `## dependency enforcement`: added `### cross-component import rule` — a component may only import from a lib declared as a dependency in `build-order.md`; component-relative import path is `../../libs/<lib-name>/src/`; components with no declared lib dependencies must not import from any lib under `libs/`
+- `project-template.md` — `## component agent.md` → `### includes`: added bullet requiring component `agent.md` to list permitted imports with component-relative paths for each declared dependency
+- `generate-docs-agent.md` — `### 3. dependency-first design`: added bullet requiring generated component `agent.md` files to declare permitted imports; undeclared lib imports forbidden
+
+---
+
+## component artifact paths: component-relative — 2026-04-30
+
+**Problem:** Generated component `tasks.md` files included full repo-rooted paths in artifact descriptions (e.g., `libs/models/src/rag_platform/models/`). Since agents operate from within the component directory, all path references in artifact descriptions and task prose must be relative to that directory (e.g., `src/`).
+
+**Changes:**
+
+- `project-template.md` — `## component tasks.md` → `### rules`: added rule requiring file path references in artifact descriptions and task prose to be component-relative; full repo paths forbidden
+- `generate-docs-agent.md` — `### 4. artifact and format enforcement`: added matching rule covering artifact descriptions, task prose, and component `tasks.md` entries
+
+---
+
+## component-tasks prompt: component-relative paths — 2026-04-30
+
+**Problem:** The `prompt-tasks.md` template in `project-template.md` used `<component>/common.md`, `<component>/agent.md`, etc. in the reads list, and `<component>/00-<task-name>.md` in the Generate section. Since the agent invoking this prompt operates from within the component directory, all paths must be relative to that directory — no component prefix.
+
+**Changes:**
+
+- `project-template.md` — `## generated prompt format: component-tasks`: reads items 4–7 stripped of `<component>/` prefix; Generate entries stripped of `<component>/` prefix; rules output clause updated from "under `<component>/`" to "in the current directory"
+
+---
+
+## task writes paths: component-relative — 2026-04-30
+
+**Problem:** The task file format template in `project-template.md` used `ROOT/libs/<lib-name>/src/<module>.py` as the example writes path, and the writes rule in both `project-template.md` and `standards.md` required paths under `ROOT/libs/` or `ROOT/services/`. Since agents operate from within the component directory (e.g., `libs/models/`), the correct writes paths are relative to that directory (e.g., `src/module.py`).
+
+**Changes:**
+
+- `project-template.md` — `## task file format` writes example: `ROOT/libs/<lib-name>/src/<module>.py` → `src/<module>.py` and `ROOT/libs/<lib-name>/tests/unit/test_<module>.py` → `tests/unit/test_<module>.py`
+- `project-template.md` — `### rules` writes rule: replaced `ROOT/libs/` or `ROOT/services/` path requirement with component-relative path requirement; explicit prohibition on `ROOT/`, `libs/<name>/`, and `services/<name>/` prefixes
+- `standards.md` — `## task acceptance checklist`: updated writes check to match component-relative path requirement
 
 ---
 
